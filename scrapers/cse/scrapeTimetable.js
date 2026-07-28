@@ -1,9 +1,17 @@
 const axios = require('axios');
 const cheerio = require('cheerio');
+const path = require('path');
 
 const TIMETABLE_URLS = require('../timetableUrls');
 const CSE_URL = TIMETABLE_URLS.cse;
-
+const {
+  OUTPUT_PATH,
+  GROUP_LIST_PATH,
+  TIMETABLE_PATH,
+} = require("../../const");
+const groupPath = path.join(GROUP_LIST_PATH, "cse.json");
+const timetablePath = path.join(TIMETABLE_PATH, "timetable_cse.json");
+const webTimetablePath = path.join(OUTPUT_PATH, "timetable_cse.json");
 function isLabSubject(subject) {
   if (!subject) return false;
   const trimmed = subject.trim();
@@ -181,7 +189,6 @@ async function scrapeCseTimetable(url = CSE_URL) {
   const result = {};
   const fs = require('fs');
   const path = require('path');
-  const groupPath = path.join(__dirname, '../../../web/group/cse.json');
   let existingGroups = [];
   // Read existing groups if file exists
   if (fs.existsSync(groupPath)) {
@@ -359,12 +366,10 @@ if (require.main === module) {
       console.log('Scraping complete. Timetable saved for CSE groups.');
       const fs = require('fs');
       const path = require('path');
-      const timetablePath = path.join(__dirname, '../../../public/timetable_cse.json');
       fs.mkdirSync(path.dirname(timetablePath), { recursive: true });
       fs.writeFileSync(timetablePath, JSON.stringify({ url, timetable }, null, 2));
       console.log(`Timetable saved to ${timetablePath}`);
 
-      const webTimetablePath = path.join(__dirname, '../../../web/timetable_cse.json');
       fs.mkdirSync(path.dirname(webTimetablePath), { recursive: true });
       fs.writeFileSync(webTimetablePath, JSON.stringify({ url, timetable }, null, 2));
       console.log(`Timetable also saved to ${webTimetablePath}`);

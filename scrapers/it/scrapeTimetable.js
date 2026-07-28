@@ -1,10 +1,19 @@
-const axios = require('axios');
-const cheerio = require('cheerio');
+const axios = require("axios");
+const cheerio = require("cheerio");
+const path = require("path");
 
-// IT Department URL only
+const {
+  OUTPUT_PATH,
+  GROUP_LIST_PATH,
+  TIMETABLE_PATH,
+} = require("../../const");
 const TIMETABLE_URLS = require('../timetableUrls');
 const IT_URL = TIMETABLE_URLS.it;
 
+
+const groupPath = path.join(GROUP_LIST_PATH, "it.json");
+const timetablePath = path.join(TIMETABLE_PATH, "timetable_it.json");
+const webTimetablePath = path.join(OUTPUT_PATH, "timetable_it.json");
 // Helper to check if subject is a Lab
 function isLabSubject(subject) {
   if (!subject) return false;
@@ -140,7 +149,7 @@ async function scrapeItTimetable(url = IT_URL) {
   const result = {};
   const fs = require('fs');
   const path = require('path');
-  const groupPath = path.join(__dirname, '../../../web/group/it.json');
+  const groupPath = path.join(GROUP_LIST_PATH, "it.json");
   let existingGroups = [];
   if (fs.existsSync(groupPath)) {
     try {

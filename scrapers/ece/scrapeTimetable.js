@@ -3,7 +3,16 @@ const cheerio = require('cheerio');
 
 const TIMETABLE_URLS = require('../timetableUrls');
 const ECE_URL = TIMETABLE_URLS.ece;
+const path = require("path");
+const {
+  OUTPUT_PATH,
+  GROUP_LIST_PATH,
+  TIMETABLE_PATH,
+} = require("../../const");
 
+const groupPath = path.join(GROUP_LIST_PATH, "ece.json");
+const timetablePath = path.join(TIMETABLE_PATH, "timetable_ece.json");
+const webTimetablePath = path.join(OUTPUT_PATH, "timetable_ece.json");
 function isLabSubject(subject) {
   if (!subject) return false;
   const trimmed = subject.trim();
@@ -127,7 +136,7 @@ async function scrapeEceTimetable(url = ECE_URL) {
   const result = {};
   const fs = require('fs');
   const path = require('path');
-  const groupPath = path.join(__dirname, '../../../web/group/ece.json');
+  const groupPath = path.join(GROUP_LIST_PATH, "ece.json");
   let existingGroups = [];
   if (fs.existsSync(groupPath)) {
     try {
@@ -219,8 +228,8 @@ async function scrapeEceAndSave(url = ECE_URL) {
   const timetable = await scrapeEceTimetable(url);
   const fs = require('fs');
   const path = require('path');
-  const groupPath = path.join(__dirname, '../../../web/group/ece.json');
-  const timetablePath = path.join(__dirname, '../../../public/timetable_ece.json');
+  const groupPath = path.join(GROUP_LIST_PATH, "ece.json");
+  const timetablePath = path.join(TIMETABLE_PATH, "timetable_ece.json");
   try {
     if (!timetable || typeof timetable !== 'object') {
       console.error('Timetable is invalid:', timetable);
@@ -232,7 +241,7 @@ async function scrapeEceAndSave(url = ECE_URL) {
     fs.mkdirSync(path.dirname(timetablePath), { recursive: true });
     fs.writeFileSync(timetablePath, JSON.stringify({ url, timetable }, null, 2));
     // Also save a copy to web/timetable_ece.json
-    const webTimetablePath = path.join(__dirname, '../../../web/timetable_ece.json');
+
     fs.mkdirSync(path.dirname(webTimetablePath), { recursive: true });
     fs.writeFileSync(webTimetablePath, JSON.stringify({ url, timetable }, null, 2));
   } catch (err) {

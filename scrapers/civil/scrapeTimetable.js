@@ -5,7 +5,15 @@ const path = require('path');
 
 const TIMETABLE_URLS = require('../timetableUrls');
 const CIVIL_URL = TIMETABLE_URLS.civil;
+const {
+  OUTPUT_PATH,
+  GROUP_LIST_PATH,
+  TIMETABLE_PATH,
+} = require("../../const");
 
+const groupPath = path.join(GROUP_LIST_PATH, "civil.json");
+const timetablePath = path.join(TIMETABLE_PATH, "timetable_civil.json");
+const webTimetablePath = path.join(OUTPUT_PATH, "timetable_civil.json");
 
 
 function parseCell($, cell) {
@@ -140,7 +148,6 @@ async function scrapeCivilAndSave(url = CIVIL_URL) {
     };
   }
   // Write group names to civil.json
-  const groupPath = path.join(__dirname, '../../../web/group/civil.json');
   try {
     const groupNames = Object.keys(timetable);
     fs.mkdirSync(path.dirname(groupPath), { recursive: true });
@@ -163,11 +170,10 @@ if (require.main === module) {
   scrapeCivilAndSave()
     .then(({ url, timetable }) => {
       console.log('Scraping complete. Timetable saved for Civil groups.');
-      const timetablePath = path.join(__dirname, '../../../public/timetable_civil.json');
+      
       fs.writeFileSync(timetablePath, JSON.stringify({ url, timetable }, null, 2));
       console.log(`Timetable saved to ${timetablePath}`);
 
-      const webTimetablePath = path.join(__dirname, '../../../web/timetable_civil.json');
       fs.writeFileSync(webTimetablePath, JSON.stringify({ url, timetable }, null, 2));
       console.log(`Timetable also saved to ${webTimetablePath}`);
     })

@@ -9,9 +9,15 @@ const axios = require('axios');
 const TIMETABLE_URLS = require('../timetableUrls');
 const URL = TIMETABLE_URLS.mechanical;
 const path = require('path');
-const OUTPUT_PATH = path.join(__dirname, '../../../../data/web/timetable_mechanical.json');
-const GROUP_LIST_PATH = path.join(__dirname, '../../../../data/web/group/mechanical.json');
-const TIMETABLE_PATH = path.join(__dirname, '../../../../data/public/timetable_mechanical.json');
+const {
+  OUTPUT_PATH,
+  GROUP_LIST_PATH,
+  TIMETABLE_PATH,
+} = require("../../const");
+
+const GROUP_LIST_PATH = path.join(GROUP_LIST_PATH, "mechanical.json");
+const TIMETABLE_PATH = path.join(TIMETABLE_PATH, "timetable_mechanical.json");
+const webTimetablePath = path.join(OUTPUT_PATH, "timetable_mechanical.json");
 const TIME_SLOTS = [
   '08:30', '09:30', '10:30', '11:30', '12:30', '13:30', '14:30', '15:30'
 ];

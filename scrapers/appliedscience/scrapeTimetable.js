@@ -3,7 +3,17 @@ const cheerio = require('cheerio');
 
 const TIMETABLE_URLS = require('../timetableUrls');
 const APPLIED_SCIENCE_URL = TIMETABLE_URLS.appliedscience;
+const path = require("path");
 
+const {
+  OUTPUT_PATH,
+  GROUP_LIST_PATH,
+  TIMETABLE_PATH,
+} = require("../../const");
+
+const groupPath = path.join(GROUP_LIST_PATH, "appliedscience.json");
+const timetablePath = path.join(TIMETABLE_PATH, "timetable_appliedscience.json");
+const webTimetablePath = path.join(OUTPUT_PATH, "timetable_appliedscience.json");
 function isLabSubject(subject) {
   if (!subject) return false;
   const trimmed = subject.trim();
@@ -86,7 +96,6 @@ async function scrapeAppliedScienceTimetable(url = APPLIED_SCIENCE_URL) {
   const result = {};
   const fs = require('fs');
   const path = require('path');
-  const groupPath = path.join(__dirname, '../../../web/group/appliedscience.json');
   let existingGroups = [];
   if (fs.existsSync(groupPath)) {
     try {
@@ -202,8 +211,9 @@ async function scrapeAppliedScienceAndSave(url = APPLIED_SCIENCE_URL) {
   const timetable = await scrapeAppliedScienceTimetable(url);
   const fs = require('fs');
   const path = require('path');
-  const groupPath = path.join(__dirname, '../../../web/group/appliedscience.json');
-  const timetablePath = path.join(__dirname, '../../../public/timetable_appliedscience.json');
+  const groupPath = path.join(GROUP_LIST_PATH, "appliedscience.json");
+  const timetablePath = path.join(TIMETABLE_PATH, "timetable_appliedscience.json");
+  const webTimetablePath = path.join(OUTPUT_PATH, "timetable_appliedscience.json");
   try {
     if (!timetable || typeof timetable !== 'object') {
       console.error('Timetable is invalid:', timetable);
@@ -217,7 +227,6 @@ async function scrapeAppliedScienceAndSave(url = APPLIED_SCIENCE_URL) {
     fs.writeFileSync(timetablePath, JSON.stringify({ url, timetable }, null, 2));
 
     // Also save a copy to web/timetable_appliedscience.json
-    const webTimetablePath = path.join(__dirname, '../../../web/timetable_appliedscience.json');
     fs.mkdirSync(path.dirname(webTimetablePath), { recursive: true });
     fs.writeFileSync(webTimetablePath, JSON.stringify({ url, timetable }, null, 2));
   } catch (err) {

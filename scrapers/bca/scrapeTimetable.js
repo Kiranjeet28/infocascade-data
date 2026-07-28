@@ -2,10 +2,16 @@ const axios = require('axios');
 const cheerio = require('cheerio');
 const fs = require('fs');
 const path = require('path');
-
 const TIMETABLE_URLS = require('../timetableUrls');
+const {
+  OUTPUT_PATH,
+  GROUP_LIST_PATH,
+  TIMETABLE_PATH,
+} = require("../../const");
 const BCA_URL = TIMETABLE_URLS.bca;
-
+const groupPath = path.join(GROUP_LIST_PATH, "bca.json");
+const timetablePath = path.join(TIMETABLE_PATH, "timetable_bca.json");
+const webTimetablePath = path.join(OUTPUT_PATH, "timetable_bca.json");
 function isLabSubject(subject) {
   if (!subject) return false;
   const trimmed = subject.trim();
@@ -203,7 +209,7 @@ async function scrapeBcaTimetable(url = BCA_URL) {
   const { data: html } = await axios.get(url);
   const $ = cheerio.load(html);
   const timetable = {};
-  const groupPath = path.join(__dirname, '../../../web/group/bca.json');
+  const groupPath = path.join(GROUP_LIST_PATH, "bca.json");
   let existingGroups = [];
   if (fs.existsSync(groupPath)) {
     try {
@@ -269,9 +275,9 @@ async function scrapeBcaTimetable(url = BCA_URL) {
 
 async function scrapeBcaAndSave(url = BCA_URL) {
   const result = await scrapeBcaTimetable(url);
-  const groupPath = path.join(__dirname, '../../../web/group/bca.json');
-  const timetablePath = path.join(__dirname, '../../../public/timetable_bca.json');
-  const webTimetablePath = path.join(__dirname, '../../../web/timetable_bca.json');
+  const groupPath = path.join(GROUP_LIST_PATH, "bca.json");
+  const timetablePath = path.join(TIMETABLE_PATH, "timetable_bca.json");
+  const webTimetablePath = path.join(OUTPUT_PATH, "timetable_bca.json");
   try {
     const { url: sourceUrl, timetable } = result || {};
     if (!timetable || typeof timetable !== 'object') {

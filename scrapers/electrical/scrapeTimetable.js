@@ -2,7 +2,15 @@ const axios = require('axios');
 const cheerio = require('cheerio');
 const fs = require('fs');
 const path = require('path');
+const {
+    OUTPUT_PATH,
+    GROUP_LIST_PATH,
+    TIMETABLE_PATH,
+} = require("../../const");
 
+const groupPath = path.join(GROUP_LIST_PATH, "electrical.json");
+const timetablePath = path.join(TIMETABLE_PATH, "timetable_electrical.json");
+const webTimetablePath = path.join(OUTPUT_PATH, "timetable_electrical.json");
 const TIMETABLE_URLS = require('../timetableUrls');
 const ELECTRICAL_URL = TIMETABLE_URLS.electrical;
 function normalizeTimeString(raw) {
@@ -165,8 +173,8 @@ async function scrapeElectricalTimetable(url = ELECTRICAL_URL) {
 
 async function scrapeElectricalAndSave(url = ELECTRICAL_URL) {
     const timetable = await scrapeElectricalTimetable(url);
-    const groupPath = path.join(__dirname, '../../../web/group/electrical.json');
-    const timetablePath = path.join(__dirname, '../../../public/timetable_electrical.json');
+    const groupPath = path.join(GROUP_LIST_PATH, "electrical.json");
+    const timetablePath = path.join(TIMETABLE_PATH, "timetable_electrical.json");
     try {
         if (!timetable || typeof timetable !== 'object') {
             console.error('Timetable is invalid:', timetable);
@@ -179,7 +187,7 @@ async function scrapeElectricalAndSave(url = ELECTRICAL_URL) {
         fs.mkdirSync(path.dirname(timetablePath), { recursive: true });
         fs.writeFileSync(timetablePath, JSON.stringify({ url, timetable }, null, 2));
         // Also save a copy to web/timetable_electrical.json
-        const webTimetablePath = path.join(__dirname, '../../../web/timetable_electrical.json');
+        const webTimetablePath = path.join(OUTPUT_PATH, "timetable_electrical.json");
         fs.mkdirSync(path.dirname(webTimetablePath), { recursive: true });
         fs.writeFileSync(webTimetablePath, JSON.stringify({ url, timetable }, null, 2));
     } catch (err) {
