@@ -1,23 +1,31 @@
-// scrapeTimetable.js for Mechanical Department
-// Scrapes the timetable from the provided HTML tables for all mechanical groups
-// Usage: node scrapeTimetable.js
+const fs = require("fs");
+const path = require("path");
+const cheerio = require("cheerio");
+const axios = require("axios");
 
-const fs = require('fs');
-const cheerio = require('cheerio');
-const axios = require('axios');
-
-const TIMETABLE_URLS = require('../timetableUrls');
+const TIMETABLE_URLS = require("../timetableUrls");
 const URL = TIMETABLE_URLS.mechanical;
-const path = require('path');
+
 const {
   OUTPUT_PATH,
   GROUP_LIST_PATH,
   TIMETABLE_PATH,
 } = require("../../const");
 
-const GROUP_LIST_PATH = path.join(GROUP_LIST_PATH, "mechanical.json");
-const TIMETABLE_PATH = path.join(TIMETABLE_PATH, "timetable_mechanical.json");
-const webTimetablePath = path.join(OUTPUT_PATH, "timetable_mechanical.json");
+const GROUP_FILE = path.join(
+  GROUP_LIST_PATH,
+  "mechanical.json"
+);
+
+const WEB_TIMETABLE_FILE = path.join(
+  OUTPUT_PATH,
+  "timetable_mechanical.json"
+);
+
+const PUBLIC_TIMETABLE_FILE = path.join(
+  TIMETABLE_PATH,
+  "timetable_mechanical.json"
+);
 const TIME_SLOTS = [
   '08:30', '09:30', '10:30', '11:30', '12:30', '13:30', '14:30', '15:30'
 ];
@@ -294,8 +302,8 @@ async function main() {
     // Try to read an existing group list, otherwise we'll build one
     let groupList = [];
     try {
-      if (fs.existsSync(GROUP_LIST_PATH)) {
-        groupList = JSON.parse(fs.readFileSync(GROUP_LIST_PATH, 'utf-8')) || [];
+      if (fs.existsSync(GROUP_FILE)) {
+        groupList = JSON.parse(fs.readFileSync(GROUP_FILE, 'utf-8')) || [];
       }
     } catch (err) {
       console.warn('Could not read existing group list, will build from page:', err.message);
@@ -353,8 +361,8 @@ async function main() {
     // Build final group list from timetable keys and write to disk
     try {
       const discovered = Object.keys(timetable);
-      fs.mkdirSync(path.dirname(GROUP_LIST_PATH), { recursive: true });
-      fs.writeFileSync(GROUP_LIST_PATH, JSON.stringify(discovered, null, 2), 'utf-8');
+      fs.mkdirSync(path.dirname(GROUP_FILE), { recursive: true });
+      fs.writeFileSync(GROUP_FILE, JSON.stringify(discovered, null, 2), 'utf-8');
     } catch (err) {
       console.error('Failed to write mechanical group info:', err.message);
     }
@@ -366,26 +374,26 @@ async function main() {
     
     // Save to web folder
     try {
-      fs.mkdirSync(path.dirname(OUTPUT_PATH), { recursive: true });
+      fs.mkdirSync(path.dirname(WEB_TIMETABLE_FILE), { recursive: true });
       fs.writeFileSync(
-        OUTPUT_PATH,
+        WEB_TIMETABLE_FILE,
         JSON.stringify(output, null, 2),
         'utf-8'
       );
-      console.log('Mechanical timetable scraped and saved to', OUTPUT_PATH);
+      console.log('Mechanical timetable scraped and saved to', WEB_TIMETABLE_FILE);
     } catch (err) {
       console.error('Failed to write mechanical timetable to web:', err.message);
     }
     
     // Save to public folder
     try {
-      fs.mkdirSync(path.dirname(TIMETABLE_PATH), { recursive: true });
+      fs.mkdirSync(path.dirname(PUBLIC_TIMETABLE_FILE), { recursive: true });
       fs.writeFileSync(
-        TIMETABLE_PATH,
+        PUBLIC_TIMETABLE_FILE,
         JSON.stringify(output, null, 2),
         'utf-8'
       );
-      console.log('Mechanical timetable also saved to', TIMETABLE_PATH);
+      console.log('Mechanical timetable also saved to', PUBLIC_TIMETABLE_FILE);
     } catch (err) {
       console.error('Failed to write mechanical timetable to public:', err.message);
     }
